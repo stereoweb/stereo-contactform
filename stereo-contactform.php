@@ -95,8 +95,9 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             $to = apply_filters('st_cf_mail_to',get_option('admin_email'));
             $from = apply_filters('st_cf_mail_from',get_option('blogname').' <'.get_option('admin_email').'>');
             $subject = apply_filters('st_cf_mail_subject',$subject);
-            $headers = ['From: '.$from,'Content-Type: text/html; charset=UTF-8','Content-Type: text/html; charset=UTF-8'];
-            if (isset($forminfo['Courriel']) && is_email($forminfo['Courriel'])) $headers[] = 'ReplyTo: '.$forminfo['Courriel'];
+            $headers = ['From: '.$from,'Content-Type: text/html; charset=UTF-8'];
+            $emailfld = apply_filters('st_cf_mail_field','Courriel');
+            if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'ReplyTo: '.$forminfo[$emailfld];
             $headers = apply_filters('st_cf_mail_headers',$headers);
             wp_mail( $to, $subject, $html, $headers );
         }
