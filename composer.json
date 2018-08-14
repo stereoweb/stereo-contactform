@@ -1,0 +1,19 @@
+{
+    "name": "stereo/contact-form",
+    "type": "wordpress-plugin",
+    "description": "Zero Config contact form with logging",
+    "keywords": ["wordpress","plugin","form","contact"],
+    "homepage": "https://www.stereo.ca/",
+    "license": "GPL2",
+    "authors": [
+        {
+            "name": "Stereo",
+            "email": "support@stereo.ca",
+            "homepage": "https://www.stereo.ca/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    }
+}
