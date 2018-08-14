@@ -5,7 +5,7 @@
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
  * Version: 1.0.0
- * License:     GPL2
+ * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
 */

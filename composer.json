@@ -4,7 +4,7 @@
     "description": "Zero Config contact form with logging",
     "keywords": ["wordpress","plugin","form","contact"],
     "homepage": "https://www.stereo.ca/",
-    "license": "GPL2",
+    "license": "0BSD",
     "authors": [
         {
             "name": "Stereo",
