@@ -25,6 +25,7 @@ Create forms in raw html and add class "js-stereo-cf" to your form.
     <textarea name="message" required></textarea>
     <input type="submit">
 </form>
+<div style="display:none">Thanks.</div>
 ```
 
 With this code, an email with the message content will be sent to the admin email of your Wordpress installation.
@@ -40,6 +41,7 @@ It will be logged in your Wordpress Administration, with the date, followed by t
     <textarea name="message" required></textarea>
     <input type="submit">
 </form>
+<div style="display:none">Thanks.</div>
 ```
 
 ### Want to change the title field in the Wordpress Administration ?
@@ -52,6 +54,7 @@ Setting the data-title to a comma seperated list of fields will concatenate each
     <input name="Nom" required>
     <input type="submit">
 </form>
+<div style="display:none">Thanks.</div>
 ```
 
 
@@ -80,7 +83,7 @@ add_filter('st_cf_mail_from',function() {
 If you want to change the subject of emails :
 
 ```
-add_filter('st_cf_mail_content',function($subject) {
+add_filter('st_cf_mail_subject',function($subject) {
     return '[My rebranded CMS] '.$subject;
 });
 ```
@@ -118,5 +121,32 @@ add_filter('st_cf_mail_field',function($field) {
 ```
 add_filter('st_cf_mail_headers',function($headers) {
     $headers[] = "X-Some: More-Headers";
+    return $headers;
+});
+```
+
+## HEADERS
+
+Default mail headers are :
+
+```
+'From: '.$from
+'Content-Type: text/html; charset=UTF-8'
+```
+
+If you have a "Courriel" field a replyTo will be added to your headers.
+
+### Field name can be changed
+```
+add_filter('st_cf_mail_field',function($field) {
+    return 'Email';
+});
+```
+
+### Modify mail headers array
+```
+add_filter('st_cf_mail_headers',function($headers) {
+    $headers[] = "X-Some: More-Headers";
+    return $headers;
 });
 ```
