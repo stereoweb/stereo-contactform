@@ -97,7 +97,7 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             $subject = apply_filters('st_cf_mail_subject',$subject);
             $headers = ['From: '.$from,'Content-Type: text/html; charset=UTF-8'];
             $emailfld = apply_filters('st_cf_mail_field','Courriel');
-            if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'ReplyTo: '.$forminfo[$emailfld];
+            if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'Reply-To: '.$forminfo[$emailfld];
             $headers = apply_filters('st_cf_mail_headers',$headers);
             wp_mail( $to, $subject, $html, $headers );
         }
