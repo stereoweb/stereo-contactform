@@ -4,7 +4,7 @@
  * Description: Formulaires de contacts
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.3
+ * Version: 1.0.5
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'ST_ContactForm' ) ) {
     class ST_ContactForm {
-        var $version = "1.0.0";
+        var $version = "1.0.5";
 
         public function __construct() {
             // ADD actions
@@ -42,11 +42,11 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
         }
 
         public function info_metabox() {
-            add_meta_box('st_cf_infos', 'Informations du formulaire', [$this, 'info_metabox_content'], 'st_contactform', 'normal', 'high');
+            add_meta_box('st_cf_infos', 'Informations', [$this, 'info_metabox_content'], 'st_contactform', 'normal', 'high');
         }
 
         public function register_js() {
-            wp_enqueue_script( 'stereo_contact', plugins_url( '/js/forms.js', __FILE__ ), array('jquery'), $this->version, true );
+            wp_enqueue_script( 'stereo_contact', plugins_url( '/js/forms.js', __FILE__ ), array(), $this->version, true );
             wp_localize_script( 'stereo_contact', 'stereo_cf', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
@@ -90,7 +90,7 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             foreach($forminfo as $fieldname => $value) {
                 $out[] = $fieldname . ": ".$value;
             }
-            $html = "<p><strong>Nouveau formulaire reçu, voici l'information : </strong></p><p>" . implode('<br>',$out) . "</p>";
+            $html = "<p><strong>".apply_filters('st_cf_mailmsg',"Nouveau formulaire reçu, voici l'information")." : </strong></p><p>" . implode('<br>',$out) . "</p>";
             $html = apply_filters('st_cf_mail_content',$html);
             $to = apply_filters('st_cf_mail_to',get_option('admin_email'));
             $from = apply_filters('st_cf_mail_from',get_option('blogname').' <'.get_option('admin_email').'>');
@@ -99,7 +99,22 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             $emailfld = apply_filters('st_cf_mail_field','Courriel');
             if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'Reply-To: '.$forminfo[$emailfld];
             $headers = apply_filters('st_cf_mail_headers',$headers);
-            wp_mail( $to, $subject, $html, $headers );
+
+            $files = [];
+
+            if (isset($_FILES['file']) && count($_FILES['file']['name'])) {
+                for($x=0;$x<count($_FILES['file']['name']);$x++) {
+                    if (is_uploaded_file($_FILES['file']['tmp_name'][$x])) {
+                        $file = sys_get_temp_dir().'/'.sanitize_file_name($_FILES['file']['name'][$x]);
+                        if (@move_uploaded_file($_FILES['file']['tmp_name'][$x],$file)) {
+                            $files[] = $file;
+                        }
+                    }
+                }
+            }
+
+            wp_mail( $to, $subject, $html, $headers, $files);
+            foreach($files as $f) @unlink($f);
         }
     }
 

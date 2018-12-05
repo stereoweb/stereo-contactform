@@ -125,6 +125,15 @@ add_filter('st_cf_mail_headers',function($headers) {
 });
 ```
 
+### Modify basic message on top of email
+```
+add_filter('st_cf_mailmsg',function($msg) {
+    return 'New form entry : ';
+    // Default : Nouveau formulaire reçu, voici l'information
+});
+```
+
+
 ## HEADERS
 
 Default mail headers are :
