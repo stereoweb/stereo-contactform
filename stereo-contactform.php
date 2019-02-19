@@ -4,7 +4,7 @@
  * Description: Formulaires de contacts
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.5
+ * Version: 1.0.6
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
