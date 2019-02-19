@@ -8,18 +8,18 @@
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
-*/
+ */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
-if ( ! class_exists( 'ST_ContactForm' ) ) {
+if (!class_exists('ST_ContactForm')) {
     class ST_ContactForm
     {
         var $version = "1.0.6";
         var $post_type = "st_contactform";
-        var $taxnonomy = "st_contactform_categorie";
+        var $taxonomy = "st_contactform_categorie";
 
         public function __construct()
         {
@@ -27,6 +27,7 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             add_action('wp_ajax_st_post_contact', [$this, 'post_contact']);
             add_action('wp_ajax_nopriv_st_post_contact', [$this, 'post_contact']);
             add_action('init', [$this, 'init']);
+            add_action('restrict_manage_posts', [$this, 'filter_by_taxonomy'], 10, 2);
             add_action('wp_enqueue_scripts', [$this, 'register_js']);
             add_action('add_meta_boxes', [$this, 'info_metabox']);
         }
@@ -39,10 +40,10 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
 
         public function register_cpt()
         {
-            register_post_type( $this->post_type,[
+            register_post_type($this->post_type, [
                 'labels' => [
-                    'name' =>  'Contacts' ,
-                    'singular_name' =>  'Contact'
+                    'name' => 'Contacts',
+                    'singular_name' => 'Contact'
                 ],
                 'show_ui' => true,
                 'rewrite' => false,
@@ -65,6 +66,30 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             return wp_insert_term($term, $this->taxonomy);
         }
 
+        public function filter_by_taxonomy($post_type, $which)
+        {
+            if ($this->post_type !== $post_type)
+                return;
+
+            $taxonomy_obj = get_taxonomy($this->taxonomy);
+            $taxonomy_name = $taxonomy_obj->labels->name;
+
+            $terms = get_terms($this->taxonomy);
+
+            echo "<select name='{$this->taxonomy}' id='{$this->taxonomy}' class='postform'>";
+            echo '<option value="">' . sprintf(esc_html__('Show All %s', 'text_domain'), $taxonomy_name) . '</option>';
+            foreach ($terms as $term) {
+                printf(
+                    '<option value="%1$s" %2$s>%3$s (%4$s)</option>',
+                    $term->slug,
+                    ((isset($_GET[$this->taxonomy]) && ($_GET[$this->taxonomy] == $term->slug)) ? ' selected="selected"' : ''),
+                    $term->name,
+                    $term->count
+                );
+            }
+            echo '</select>';
+        }
+
         public function info_metabox()
         {
             add_meta_box('st_cf_infos', 'Informations', [$this, 'info_metabox_content'], $this->post_type, 'normal', 'high');
@@ -72,15 +97,15 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
 
         public function register_js()
         {
-            wp_enqueue_script( 'stereo_contact', plugins_url( '/js/forms.js', __FILE__ ), array(), $this->version, true );
-            wp_localize_script( 'stereo_contact', 'stereo_cf', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+            wp_enqueue_script('stereo_contact', plugins_url('/js/forms.js', __FILE__), array(), $this->version, true);
+            wp_localize_script('stereo_contact', 'stereo_cf', array('ajax_url' => admin_url('admin-ajax.php')));
         }
 
         public function info_metabox_content()
         {
             global $post;
-            $infos = get_post_meta($post->ID,'form_data',true);
-            include(dirname(__FILE__).'/templates/infos.php');
+            $infos = get_post_meta($post->ID, 'form_data', true);
+            include(dirname(__FILE__) . '/templates/infos.php');
         }
 
         public function post_contact()
@@ -90,65 +115,66 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
                 die('No bots please!');
             }
             $forminfo = [];
-            $titlefield = explode(',',stripslashes($_POST['_title_field']));
-            $titlefield = array_map('trim',$titlefield);
+            $titlefield = explode(',', stripslashes($_POST['_title_field']));
+            $titlefield = array_map('trim', $titlefield);
 
-            $term = term_exists($_POST['_category'], $this->taxonomy);
-            if (0 === $term || null === $term) {
-                $term = $this->insert_term($_POST['_category']);
+            $term = $_POST['_category'];
+            $term_exist = term_exists($_POST['_category'], $this->taxonomy);
+            if (0 === $term_exist || null === $term_exist) {
+                $this->insert_term($term);
             }
 
-            foreach($_POST as $k => $v) {
-                if ($k == 'action' || substr($k,0,1) == '_') continue;
-                $forminfo[str_replace('_',' ',$k)] = is_array($v) ? implode(', ', array_map('stripslashes',$v)) : stripslashes($v);
+            foreach ($_POST as $k => $v) {
+                if ($k == 'action' || substr($k, 0, 1) == '_') continue;
+                $forminfo[str_replace('_', ' ', $k)] = is_array($v) ? implode(', ', array_map('stripslashes', $v)) : stripslashes($v);
             }
 
-            foreach($titlefield as $field) {
+            foreach ($titlefield as $field) {
                 $title[] = $forminfo[$field];
             }
 
-            $title = implode(' ',$title);
-            $postinfo = array('post_status' => 'publish', 'post_type' => $this->post_type, 'post_title'=> current_time('Y-m-d H:i:s').' - '.$title);
+            $title = implode(' ', $title);
+            $postinfo = array('post_status' => 'publish', 'post_type' => $this->post_type, 'post_title' => current_time('Y-m-d H:i:s') . ' - ' . $title);
             $id = wp_insert_post($postinfo);
-            add_post_meta($id,'form_data',$forminfo);
-            wp_set_post_terms($id, $term['term_id'], $this->taxonomy);
+            add_post_meta($id, 'form_data', $forminfo);
+            wp_set_post_terms($id, $term, $this->taxonomy);
 
-            $this->send_email($forminfo,$_POST['_subject'],$id);
+            $this->send_email($forminfo, $_POST['_subject'], $id);
             wp_send_json(['success' => true]);
             die();
         }
 
-        public function send_email($forminfo,$subject,$postid)
+        public function send_email($forminfo, $subject, $postid)
         {
             $out = [];
-            foreach($forminfo as $fieldname => $value) {
-                $out[] = $fieldname . ": ".$value;
+            foreach ($forminfo as $fieldname => $value) {
+                $out[] = $fieldname . ": " . $value;
             }
-            $html = "<p><strong>".apply_filters('st_cf_mailmsg',"Nouveau formulaire reçu, voici l'information")." : </strong></p><p>" . implode('<br>',$out) . "</p>";
-            $html = apply_filters('st_cf_mail_content',$html);
-            $to = apply_filters('st_cf_mail_to',get_option('admin_email'));
-            $from = apply_filters('st_cf_mail_from',get_option('blogname').' <'.get_option('admin_email').'>');
-            $subject = apply_filters('st_cf_mail_subject',$subject);
-            $headers = ['From: '.$from,'Content-Type: text/html; charset=UTF-8'];
-            $emailfld = apply_filters('st_cf_mail_field','Courriel');
-            if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'Reply-To: '.$forminfo[$emailfld];
-            $headers = apply_filters('st_cf_mail_headers',$headers);
+            $html = "<p><strong>" . apply_filters('st_cf_mailmsg', "Nouveau formulaire reçu, voici l'information") . " : </strong></p><p>" . implode('<br>', $out) . "</p>";
+            $html = apply_filters('st_cf_mail_content', $html);
+            $to = apply_filters('st_cf_mail_to', get_option('admin_email'));
+            $from = apply_filters('st_cf_mail_from', get_option('blogname') . ' <' . get_option('admin_email') . '>');
+            $subject = apply_filters('st_cf_mail_subject', $subject);
+            $headers = ['From: ' . $from, 'Content-Type: text/html; charset=UTF-8'];
+            $emailfld = apply_filters('st_cf_mail_field', 'Courriel');
+            if (isset($forminfo[$emailfld]) && is_email($forminfo[$emailfld])) $headers[] = 'Reply-To: ' . $forminfo[$emailfld];
+            $headers = apply_filters('st_cf_mail_headers', $headers);
 
             $files = [];
 
             if (isset($_FILES['file']) && count($_FILES['file']['name'])) {
-                for($x=0;$x<count($_FILES['file']['name']);$x++) {
+                for ($x = 0; $x < count($_FILES['file']['name']); $x++) {
                     if (is_uploaded_file($_FILES['file']['tmp_name'][$x])) {
-                        $file = sys_get_temp_dir().'/'.sanitize_file_name($_FILES['file']['name'][$x]);
-                        if (@move_uploaded_file($_FILES['file']['tmp_name'][$x],$file)) {
+                        $file = sys_get_temp_dir() . '/' . sanitize_file_name($_FILES['file']['name'][$x]);
+                        if (@move_uploaded_file($_FILES['file']['tmp_name'][$x], $file)) {
                             $files[] = $file;
                         }
                     }
                 }
             }
 
-            wp_mail( $to, $subject, $html, $headers, $files);
-            foreach($files as $f) @unlink($f);
+            wp_mail($to, $subject, $html, $headers, $files);
+            foreach ($files as $f) @unlink($f);
         }
     }
 
