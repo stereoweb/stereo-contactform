@@ -21,6 +21,7 @@ jQuery(function($) {
             "Page précédente" : document.referrer,
             "_subject": $(this).data('subject') || 'Formulaire de contact',
             "_title_field": $(this).data('title') || $(this).find('input:first').attr('name'),
+            "_category": $(this).data('category') || 'Contact',
             "_nobot": "1"
         }
         $.each(additions,function(k,v) {
