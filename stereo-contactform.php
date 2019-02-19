@@ -15,48 +15,76 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'ST_ContactForm' ) ) {
-    class ST_ContactForm {
-        var $version = "1.0.5";
+    class ST_ContactForm
+    {
+        var $version = "1.0.6";
+        var $post_type = "st_contactform";
+        var $taxnonomy = "st_contactform_categorie";
 
-        public function __construct() {
+        public function __construct()
+        {
             // ADD actions
             add_action('wp_ajax_st_post_contact', [$this, 'post_contact']);
             add_action('wp_ajax_nopriv_st_post_contact', [$this, 'post_contact']);
-            add_action('init', [$this, 'register_cpt']);
+            add_action('init', [$this, 'init']);
             add_action('wp_enqueue_scripts', [$this, 'register_js']);
             add_action('add_meta_boxes', [$this, 'info_metabox']);
         }
 
-        public function register_cpt() {
-            register_post_type( 'st_contactform',
-              array(
-                'labels' => array(
-                  'name' =>  'Contacts' ,
-                  'singular_name' =>  'Contact'
-                ),
+        public function init()
+        {
+            $this->register_cpt();
+            $this->register_taxonomy();
+        }
+
+        public function register_cpt()
+        {
+            register_post_type( $this->post_type,[
+                'labels' => [
+                    'name' =>  'Contacts' ,
+                    'singular_name' =>  'Contact'
+                ],
                 'show_ui' => true,
-        		'rewrite' => false,
+                'rewrite' => false,
                 'supports' => array('title')
-              )
-            );
+            ]);
         }
 
-        public function info_metabox() {
-            add_meta_box('st_cf_infos', 'Informations', [$this, 'info_metabox_content'], 'st_contactform', 'normal', 'high');
+        public function register_taxonomy()
+        {
+            register_taxonomy($this->taxonomy, $this->post_type, [
+                'labels' => [
+                    'name' => 'Catégories',
+                    'singular_name' => 'Catégorie'
+                ]
+            ]);
         }
 
-        public function register_js() {
+        public function insert_term($term)
+        {
+            return wp_insert_term($term, $this->taxonomy);
+        }
+
+        public function info_metabox()
+        {
+            add_meta_box('st_cf_infos', 'Informations', [$this, 'info_metabox_content'], $this->post_type, 'normal', 'high');
+        }
+
+        public function register_js()
+        {
             wp_enqueue_script( 'stereo_contact', plugins_url( '/js/forms.js', __FILE__ ), array(), $this->version, true );
             wp_localize_script( 'stereo_contact', 'stereo_cf', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
-        public function info_metabox_content() {
+        public function info_metabox_content()
+        {
             global $post;
             $infos = get_post_meta($post->ID,'form_data',true);
             include(dirname(__FILE__).'/templates/infos.php');
         }
 
-        public function post_contact() {
+        public function post_contact()
+        {
             if (!$_POST['_nobot']) {
                 header('HTTP/1.0 403 Forbidden');
                 die('No bots please!');
@@ -64,6 +92,11 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             $forminfo = [];
             $titlefield = explode(',',stripslashes($_POST['_title_field']));
             $titlefield = array_map('trim',$titlefield);
+
+            $term = term_exists($_POST['_category'], $this->taxonomy);
+            if (0 === $term || null === $term) {
+                $term = $this->insert_term($_POST['_category']);
+            }
 
             foreach($_POST as $k => $v) {
                 if ($k == 'action' || substr($k,0,1) == '_') continue;
@@ -75,17 +108,18 @@ if ( ! class_exists( 'ST_ContactForm' ) ) {
             }
 
             $title = implode(' ',$title);
-            $postinfo = array('post_status' => 'publish', 'post_type' => 'st_contactform', 'post_title'=> current_time('Y-m-d H:i:s').' - '.$title);
+            $postinfo = array('post_status' => 'publish', 'post_type' => $this->post_type, 'post_title'=> current_time('Y-m-d H:i:s').' - '.$title);
             $id = wp_insert_post($postinfo);
             add_post_meta($id,'form_data',$forminfo);
+            wp_set_post_terms($id, $term['term_id'], $this->taxonomy);
 
             $this->send_email($forminfo,$_POST['_subject'],$id);
             wp_send_json(['success' => true]);
             die();
         }
 
-        public function send_email($forminfo,$subject,$postid) {
-
+        public function send_email($forminfo,$subject,$postid)
+        {
             $out = [];
             foreach($forminfo as $fieldname => $value) {
                 $out[] = $fieldname . ": ".$value;

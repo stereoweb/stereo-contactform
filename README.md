@@ -57,6 +57,19 @@ Setting the data-title to a comma seperated list of fields will concatenate each
 <div style="display:none">Thanks.</div>
 ```
 
+### Want to set a category to filter the Administration list in case of multiple forms ?
+
+The default category is Contact
+
+```
+<form class="[any other classes] js-stereo-cf" data-category="Subscription">
+    <input name="Prenom" required>
+    <input name="Nom" required>
+    <input type="submit">
+</form>
+<div style="display:none">Thanks.</div>
+```
+
 
 ### Manipulate the "TO" email address
 
