@@ -70,6 +70,19 @@ The default category is Contact
 <div style="display:none">Thanks.</div>
 ```
 
+### Want to redirect on success ?
+
+Set data-redirect with the redirect url
+
+```
+<form class="[any other classes] js-stereo-cf" data-redirect="/success">
+    <input name="Prenom" required>
+    <input name="Nom" required>
+    <input type="submit">
+</form>
+<div style="display:none">Thanks.</div>
+```
+
 
 ### Manipulate the "TO" email address
 
