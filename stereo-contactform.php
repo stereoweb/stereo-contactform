@@ -4,7 +4,7 @@
  * Description: Formulaires de contacts
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.7
+ * Version: 1.0.8
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -139,7 +139,7 @@ if (!class_exists('ST_ContactForm')) {
             add_post_meta($id, 'form_data', $forminfo);
             wp_set_post_terms($id, $term, $this->taxonomy);
 
-            $this->send_email($forminfo, $_POST['_subject'], $id);
+            $this->send_email($forminfo, stripslashes($_POST['_subject']), $id);
             wp_send_json(['success' => true]);
             die();
         }
