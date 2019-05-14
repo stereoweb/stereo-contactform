@@ -40,7 +40,7 @@ jQuery(function ($) {
             $('<iframe style="height:1px;width:1px;border:0;opacity:0;position:absolute;" id="stFrmToPost" name="stFrmToPost" />').appendTo($('body'));
             $this.attr('target', 'stFrmToPost');
             $this.attr('action', stereo_cf.ajax_url);
-            $this.hide()
+            $this.addClass('is-submitting').hide()
             setTimeout(function () {
                 $this.find('.js-extra-form-data').remove();
                 $this.get(0).reset();
@@ -66,7 +66,7 @@ jQuery(function ($) {
                     $this.show();
                     alert('Une erreur est survenue, veuillez réessayer!');
                 });
-            $this.hide()
+            $this.addClass('is-submitting').hide()
             $this.find('.js-extra-form-data').remove();
             return false;
         }
