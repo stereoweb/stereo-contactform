@@ -1,6 +1,6 @@
-# Project Title
+# Stereo Contact Form
 
-Stereo Contact Form - Zero Config Contact Form with Logging for Wordpress
+Zero Config Contact Form with Logging for Wordpress
 
 ## Getting Started
 
