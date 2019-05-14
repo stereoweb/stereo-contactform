@@ -49,7 +49,7 @@ jQuery(function ($) {
             if ($this.data('redirect')) {
                 window.location.href = $this.data('redirect');
             } else {
-                $this.next().show();
+                $this.removeClass('is-submitting').addClass('is-submitted').next().show();
             }
         } else {
             $.post(stereo_cf.ajax_url, $(this).serializeArray())
@@ -59,11 +59,11 @@ jQuery(function ($) {
                     if ($this.data('redirect')) {
                         window.location.href = $this.data('redirect');
                     } else {
-                        $this.next().show();
+                        $this.removeClass('is-submitting').addClass('is-submitted').next().show();
                     }
                 })
                 .fail(function () {
-                    $this.show();
+                    $this.removeClass('is-submitting').show();
                     alert('Une erreur est survenue, veuillez réessayer!');
                 });
             $this.addClass('is-submitting').hide()
