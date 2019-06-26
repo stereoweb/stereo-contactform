@@ -4,7 +4,7 @@
  * Description: Formulaires de contacts
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.9
+ * Version: 1.0.10
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('ST_ContactForm')) {
     class ST_ContactForm
     {
-        var $version = "1.0.9";
+        var $version = "1.0.10";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -136,7 +136,8 @@ if (!class_exists('ST_ContactForm')) {
             $title = implode(' ', $title);
             $postinfo = array('post_status' => 'publish', 'post_type' => $this->post_type, 'post_title' => current_time('Y-m-d H:i:s') . ' - ' . $title);
             $id = wp_insert_post($postinfo);
-            add_post_meta($id, 'form_data', $forminfo);
+
+            add_post_meta($id, 'form_data', apply_filters('st_cf_post_info', $forminfo));
             wp_set_post_terms($id, $term, $this->taxonomy);
 
             $this->send_email($forminfo, stripslashes($_POST['_subject']), $id);
@@ -150,7 +151,8 @@ if (!class_exists('ST_ContactForm')) {
             foreach ($forminfo as $fieldname => $value) {
                 $out[] = $fieldname . ": " . $value;
             }
-            $html = "<p><strong>" . apply_filters('st_cf_mailmsg', "Nouveau formulaire reçu, voici l'information") . " : </strong></p><p>" . implode('<br>', $out) . "</p>";
+            $out = apply_filters('st_cf_mail_fields', implode('<br>', $out));
+            $html = "<p><strong>" . apply_filters('st_cf_mailmsg', "Nouveau formulaire reçu, voici l'information") . " : </strong></p><p>" . $out . "</p>";
             $html = apply_filters('st_cf_mail_content', $html);
             $to = apply_filters('st_cf_mail_to', get_option('admin_email'));
             $from = apply_filters('st_cf_mail_from', get_option('blogname') . ' <' . get_option('admin_email') . '>');
