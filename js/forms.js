@@ -31,6 +31,15 @@ jQuery(function ($) {
             $input.appendTo($div);
         });
 
+        var callback = $(this).data('callback');
+        if (callback && window[callback]) {
+            try {
+                window[callback]();
+            } catch (error) {
+                // skip
+            }
+        }
+
         $(this).find('.js-extra-form-data').remove();
         $div.appendTo($(this));
         var $this = $(this);

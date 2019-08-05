@@ -185,3 +185,12 @@ add_filter('st_cf_mail_headers',function($headers) {
     return $headers;
 });
 ```
+### Add callback function
+```
+<form class="[any other classes] js-stereo-cf" data-callback="functionName">
+    <input name="Prenom" required>
+    <input name="Nom" required>
+    <input type="submit">
+</form>
+<div style="display:none">Thanks.</div>
+```
