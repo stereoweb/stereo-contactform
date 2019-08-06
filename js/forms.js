@@ -34,7 +34,7 @@ jQuery(function ($) {
         var callback = $(this).data('callback');
         if (callback && window[callback]) {
             try {
-                window[callback]();
+                window[callback](this);
             } catch (error) {
                 // skip
             }
