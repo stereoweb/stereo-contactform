@@ -118,10 +118,13 @@ if (!class_exists('ST_ContactForm')) {
             $titlefield = explode(',', stripslashes($_POST['_title_field']));
             $titlefield = array_map('trim', $titlefield);
 
-            $term = $_POST['_category'];
-            $term_exist = term_exists($_POST['_category'], $this->taxonomy);
-            if (0 === $term_exist || null === $term_exist) {
-                $this->insert_term($term);
+            $terms = $_POST['_category'];
+            if( ! is_array($terms) ) $terms[] = $terms;
+            foreach($terms as $term) {
+                $term_exist = term_exists($term, $this->taxonomy);
+                if (0 === $term_exist || null === $term_exist) {
+                    $this->insert_term($term);
+                }
             }
 
             foreach ($_POST as $k => $v) {
