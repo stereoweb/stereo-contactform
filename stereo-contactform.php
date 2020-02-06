@@ -4,7 +4,7 @@
  * Description: Formulaires de contacts
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.14
+ * Version: 1.0.15
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('ST_ContactForm')) {
     class ST_ContactForm
     {
-        var $version = "1.0.14";
+        var $version = "1.0.15";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -119,7 +119,7 @@ if (!class_exists('ST_ContactForm')) {
             $titlefield = array_map('trim', $titlefield);
 
             $terms = $_POST['_category'];
-            if( ! is_array($terms) ) $terms[] = $terms;
+            if( ! is_array($terms) ) $terms = array_map('trim', explode(',', $terms));
             foreach($terms as $term) {
                 $term_exist = term_exists($term, $this->taxonomy);
                 if (0 === $term_exist || null === $term_exist) {
@@ -141,7 +141,7 @@ if (!class_exists('ST_ContactForm')) {
             $id = wp_insert_post($postinfo);
 
             add_post_meta($id, 'form_data', apply_filters('st_cf_post_info', $forminfo));
-            wp_set_post_terms($id, $term, $this->taxonomy);
+            wp_set_post_terms($id, $terms, $this->taxonomy);
 
             $this->send_email($forminfo, stripslashes($_POST['_subject']), $id);
             wp_send_json(['success' => true]);
