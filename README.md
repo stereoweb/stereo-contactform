@@ -194,3 +194,20 @@ add_filter('st_cf_mail_headers',function($headers) {
 </form>
 <div style="display:none">Thanks.</div>
 ```
+
+### Handle uploaded files
+
+All uploaded files with name files[] are sent by email by default, but if you want to do anything else with them :
+
+This hook is not triggered if there are no uploaded files.
+
+`$files = array of files`
+`$postid` = ID of saved post ID
+
+```
+add_action('st_cf_files',function($files,$postid) {
+    foreach($files as $f)  {
+        // $f is a temp file path that will be deleted after this hook.
+    }
+});
+```
