@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('ST_ContactForm')) {
     class ST_ContactForm
     {
-        var $version = "1.0.15";
+        var $version = "1.0.16";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
