@@ -34,6 +34,11 @@ The subject will be "Formulaire de contact"
 
 It will be logged in your Wordpress Administration, with the date, followed by the first field of your form.
 
+### Want to reset form and keet it visible after send?
+```
+<form class="[any other classes] js-stereo-cf" data-reset-only>
+```
+
 ### Want to change the email subject to better fit your needs?
 
 ```

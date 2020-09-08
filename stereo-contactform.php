@@ -1,10 +1,12 @@
 <?php
 /*
  * Plugin Name: Stereo contact form
- * Description: Formulaires de contacts
+ * Description: Plugin de formulaires
  * Author: Stereo
  * Author URI: https://www.stereo.ca/
- * Version: 1.0.17
+ * Text Domain: stereo-contactform
+ * Domain Path: /languages
+ * Version: 1.0.18
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -15,6 +17,8 @@ if (!defined('ABSPATH')) {
 }
 
 if (!class_exists('ST_ContactForm')) {
+    include 'acf.php';
+
     class ST_ContactForm
     {
         var $version = "1.0.17";
@@ -30,6 +34,9 @@ if (!class_exists('ST_ContactForm')) {
             add_action('restrict_manage_posts', [$this, 'filter_by_taxonomy'], 10, 2);
             add_action('wp_enqueue_scripts', [$this, 'register_js'], 30);
             add_action('add_meta_boxes', [$this, 'info_metabox']);
+
+            add_filter('st_cf_mail_to',[$this, 'mail_to'], 1);
+            add_filter('st_cf_mail_from',[$this, 'mail_from'], 1);
         }
 
         public function init()
@@ -42,8 +49,8 @@ if (!class_exists('ST_ContactForm')) {
         {
             register_post_type($this->post_type, [
                 'labels' => [
-                    'name' => 'Contacts',
-                    'singular_name' => 'Contact'
+                    'name' => __('Formulaires Stereo','stereo-contactform'),
+                    'singular_name' => __('Formulaire Stereo','stereo-contactform')
                 ],
                 'show_ui' => true,
                 'rewrite' => false,
@@ -55,8 +62,8 @@ if (!class_exists('ST_ContactForm')) {
         {
             register_taxonomy($this->taxonomy, $this->post_type, [
                 'labels' => [
-                    'name' => 'Catégories',
-                    'singular_name' => 'Catégorie'
+                    'name' => __('Catégories','stereo-contactform'),
+                    'singular_name' => __('Catégorie','stereo-contactform')
                 ]
             ]);
         }
@@ -77,7 +84,8 @@ if (!class_exists('ST_ContactForm')) {
             $terms = get_terms($this->taxonomy);
 
             echo "<select name='{$this->taxonomy}' id='{$this->taxonomy}' class='postform'>";
-            echo '<option value="">' . sprintf(esc_html__('Show All %s', 'text_domain'), $taxonomy_name) . '</option>';
+            /* translators: %s is replaced with the number of entries */
+            echo '<option value="">' . sprintf(esc_html__('Voir tout %s', 'stereo-contactform'), $taxonomy_name) . '</option>';
             foreach ($terms as $term) {
                 printf(
                     '<option value="%1$s" %2$s>%3$s (%4$s)</option>',
@@ -157,7 +165,7 @@ if (!class_exists('ST_ContactForm')) {
                 $out[] = $fieldname . ": " . $value;
             }
             $out = apply_filters('st_cf_mail_fields', implode('<br>', $out));
-            $html = "<p><strong>" . apply_filters('st_cf_mailmsg', "Nouveau formulaire reçu, voici l'information") . " : </strong></p><p>" . $out . "</p>";
+            $html = "<p><strong>" . apply_filters('st_cf_mailmsg', __("Nouveau formulaire reçu, voici l'information",'stereo-contactform')) . " : </strong></p><p>" . $out . "</p>";
             $html = apply_filters('st_cf_mail_content', $html);
             $to = apply_filters('st_cf_mail_to', get_option('admin_email'));
             $from = apply_filters('st_cf_mail_from', get_option('blogname') . ' <' . get_option('admin_email') . '>');
@@ -186,7 +194,40 @@ if (!class_exists('ST_ContactForm')) {
             }
             foreach ($files as $f) @unlink($f);
         }
+
+        public function mail_to($dst)
+        {
+            $terms = $_POST['_category'];
+            if( ! is_array($terms) ) $terms = array_map('trim', explode(',', $terms));
+            $to = '';
+            foreach($terms as $term) {
+                $term_exist = term_exists($term, $this->taxonomy);
+                if ($term_exist) {
+                    $t = get_term($term_exist['term_id']);
+                    if ($mail = get_field('stereo_to_email', $t)) {
+                        if (!empty($to)) $to .= ',';
+                        $to .= $mail;
+                    }
+                }
+            }
+            if (!empty($to)) return $to;
+
+			if (is_email(get_field('stereo_dest_mail','option'))) return get_field('stereo_dest_name','option').' <'.get_field('stereo_dest_mail','option').'>';
+			return $dst;
+        }
+
+        public function mail_from($dst)
+        {
+            if (is_email(get_field('stereo_from_mail','option'))) return get_field('stereo_from_name','option').' <'.get_field('stereo_from_mail','option').'>';
+			return $dst;
+        }
     }
 
     new ST_ContactForm();
+
+    function stereo_contactform_load_plugin_textdomain() {
+        load_plugin_textdomain( 'stereo-contactform', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+    }
+    add_action( 'plugins_loaded', 'stereo_contactform_load_plugin_textdomain' );
 }
+

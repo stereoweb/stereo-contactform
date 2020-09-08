@@ -1,0 +1,81 @@
+# Copyright (C) 2020 Stereo
+# This file is distributed under the same license as the Stereo contact form plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Stereo contact form 1.0.17\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/stereo-contactform\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-09-08T15:22:31+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.1.0\n"
+"X-Domain: stereo-contactform\n"
+
+#. Plugin Name of the plugin
+msgid "Stereo contact form"
+msgstr ""
+
+#. Description of the plugin
+msgid "Plugin de formulaires"
+msgstr ""
+
+#. Author of the plugin
+msgid "Stereo"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.stereo.ca/"
+msgstr ""
+
+#: acf.php:6
+#: acf.php:7
+msgid "Configuration"
+msgstr ""
+
+#: acf.php:14
+msgid "Destinataires formulaire de contact"
+msgstr ""
+
+#: acf.php:18
+msgid "Nom du destinataire"
+msgstr ""
+
+#: acf.php:37
+msgid "Courriel du destinataire"
+msgstr ""
+
+#: acf.php:55
+msgid "Nom de provenance du courriel"
+msgstr ""
+
+#: acf.php:74
+msgid "Courriel du provenance"
+msgstr ""
+
+#: stereo-contactform.php:49
+msgid "Formulaires Stereo"
+msgstr ""
+
+#: stereo-contactform.php:50
+msgid "Formulaire Stereo"
+msgstr ""
+
+#: stereo-contactform.php:62
+msgid "Catégories"
+msgstr ""
+
+#: stereo-contactform.php:63
+msgid "Catégorie"
+msgstr ""
+
+#. translators: %s is replaced with the number of entries
+#: stereo-contactform.php:85
+msgid "Voir tout %s"
+msgstr ""
+
+#: stereo-contactform.php:165
+msgid "Nouveau formulaire reçu, voici l'information"
+msgstr ""
