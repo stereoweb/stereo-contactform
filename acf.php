@@ -11,7 +11,7 @@ add_action('init',function() {
 
 		acf_add_local_field_group(array(
 			'key' => 'group_5e8337e85e2d1',
-			'title' => __('Destinataires formulaire de contact','stereo-contactform'),
+			'title' => __('Destinataire des formulaires','stereo-contactform'),
 			'fields' => array(
 				array(
 					'key' => 'field_5e8337fe8d7b9',

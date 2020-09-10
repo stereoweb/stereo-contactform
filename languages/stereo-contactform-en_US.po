@@ -2,15 +2,15 @@
 # This file is distributed under the same license as the Stereo contact form plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Stereo contact form 1.0.17\n"
+"Project-Id-Version: Stereo contact form 1.0.18\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/stereo-"
 "contactform\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-09-08T15:22:31+00:00\n"
-"PO-Revision-Date: 2020-09-08 11:32-0400\n"
+"POT-Creation-Date: 2020-09-10T19:45:29+00:00\n"
+"PO-Revision-Date: 2020-09-10 15:54-0400\n"
 "X-Generator: Poedit 2.4.1\n"
 "X-Domain: stereo-contactform\n"
 "Last-Translator: \n"
@@ -38,7 +38,7 @@ msgid "Configuration"
 msgstr "Settings"
 
 #: acf.php:14
-msgid "Destinataires formulaire de contact"
+msgid "Destinataire des formulaires"
 msgstr "Forms destinations"
 
 #: acf.php:18
@@ -57,27 +57,39 @@ msgstr "Sender’s name"
 msgid "Courriel du provenance"
 msgstr "Sender’s email"
 
-#: stereo-contactform.php:49
+#: acf.php:112
+msgid "Catégorie Formulaire Stereo"
+msgstr "Stereo forms categories"
+
+#: acf.php:116
+msgid "Courriel de destination"
+msgstr "Receiver’s email"
+
+#: acf.php:119
+msgid "Plusieurs destinations? Séparer les courriels par une virgule."
+msgstr "More than one email? Use comma to separate them."
+
+#: stereo-contactform.php:52
 msgid "Formulaires Stereo"
 msgstr "Stereo Forms"
 
-#: stereo-contactform.php:50
+#: stereo-contactform.php:53
 msgid "Formulaire Stereo"
 msgstr "Stereo Form"
 
-#: stereo-contactform.php:62
+#: stereo-contactform.php:65
 msgid "Catégories"
 msgstr "Categories"
 
-#: stereo-contactform.php:63
+#: stereo-contactform.php:66
 msgid "Catégorie"
-msgstr "Catégorie"
+msgstr "Category"
 
 #. translators: %s is replaced with the number of entries
-#: stereo-contactform.php:85
+#: stereo-contactform.php:88
 msgid "Voir tout %s"
 msgstr "Show all %s"
 
-#: stereo-contactform.php:165
+#: stereo-contactform.php:168
 msgid "Nouveau formulaire reçu, voici l'information"
 msgstr "New form entry, here is the content"
