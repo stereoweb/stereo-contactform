@@ -8,8 +8,23 @@ jQuery(function ($) {
         return hasFile;
     };
 
-    $(document).on('submit', '.js-stereo-cf', function () {
-        var frm = $(this).get(0);
+    $(document).on('submit', '.js-stereo-cf', function (e) {
+        e.preventDefault();
+        var form = $(this);
+        if (window.recaptcha_v3) {
+            grecaptcha.ready(function () {
+                grecaptcha.execute(window.recaptcha_v3, { action: 'submit' }).then(function (token) {
+                    submitStereoForm(form, token);
+                });
+            });
+        } else {
+            submitStereoForm(form);
+        }
+        return false;
+    });
+
+    var submitStereoForm = function(form, token) {
+        var frm = form.get(0);
         if (!frm.checkValidity()) {
             alert('Veuillez compléter tous les champs requis !');
             return false;
@@ -19,11 +34,14 @@ jQuery(function ($) {
             "action": "st_post_contact",
             "Page actuelle": location.href,
             "Page précédente": document.referrer,
-            "_subject": $(this).data('subject') || 'Formulaire de contact',
-            "_title_field": $(this).data('title') || $(this).find('input:first').attr('name'),
-            "_category": $(this).data('category') || 'Contact',
+            "_subject": form.data('subject') || 'Formulaire de contact',
+            "_title_field": form.data('title') || form.find('input:first').attr('name'),
+            "_category": form.data('category') || 'Contact',
             "_nobot": "1"
         }
+
+        if (token) additions['_token'] = token;
+
         $.each(additions, function (k, v) {
             var $input = $('<input type="hidden" />');
             $input.attr('name', k);
@@ -31,67 +49,66 @@ jQuery(function ($) {
             $input.appendTo($div);
         });
 
-        var callback = $(this).data('callback');
+        var callback = form.data('callback');
         if (callback && window[callback]) {
             try {
-                window[callback](this);
+                window[callback](form[0]);
             } catch (error) {
                 // skip
             }
         }
 
-        $(this).find('.js-extra-form-data').remove();
-        $div.appendTo($(this));
-        var $this = $(this);
+        form.find('.js-extra-form-data').remove();
+        $div.appendTo(form);
 
         if (formHasFiles(frm)) {
             $('#stFrmToPost').remove();
             $('<iframe style="height:1px;width:1px;border:0;opacity:0;position:absolute;" id="stFrmToPost" name="stFrmToPost" />').appendTo($('body'));
-            $this.attr('target', 'stFrmToPost');
-            $this.attr('action', stereo_cf.ajax_url);
-            $this.addClass('is-submitting')
+            form.attr('target', 'stFrmToPost');
+            form.attr('action', stereo_cf.ajax_url);
+            form.addClass('is-submitting')
 
-            if (!$this.data('reset-only')) {
-                $this[0].reset();
+            if (!form.data('reset-only')) {
+                form[0].reset();
             } else {
-                $this.hide();
+                form.hide();
             }
 
             setTimeout(function () {
-                $this.find('.js-extra-form-data').remove();
-                $this.get(0).reset();
+                form.find('.js-extra-form-data').remove();
+                form.get(0).reset();
             }, 500)
 
-            if ($this.data('redirect')) {
-                window.location.href = $this.data('redirect');
+            if (form.data('redirect')) {
+                window.location.href = form.data('redirect');
             } else {
-                $this.removeClass('is-submitting').addClass('is-submitted').next().show();
+                form.removeClass('is-submitting').addClass('is-submitted').next().show();
             }
         } else {
-            $.post(stereo_cf.ajax_url, $(this).serializeArray())
+            $.post(stereo_cf.ajax_url, form.serializeArray())
                 .then(function () {
-                    $this.get(0).reset();
+                    form.get(0).reset();
 
-                    if ($this.data('redirect')) {
-                        window.location.href = $this.data('redirect');
+                    if (form.data('redirect')) {
+                        window.location.href = form.data('redirect');
                     } else {
-                        $this.removeClass('is-submitting').addClass('is-submitted').next().show();
+                        form.removeClass('is-submitting').addClass('is-submitted').next().show();
                     }
                 })
                 .fail(function () {
-                    $this.removeClass('is-submitting').show();
+                    form.removeClass('is-submitting').show();
                     alert('Une erreur est survenue, veuillez réessayer!');
                 });
-            $this.addClass('is-submitting');
+            form.addClass('is-submitting');
 
-            if (!$this.data('reset-only')) {
-                $this[0].reset();
+            if (form.data('reset-only')) {
+                form[0].reset();
             } else {
-                $this.hide();
+                form.hide();
             }
 
-            $this.find('.js-extra-form-data').remove();
+            form.find('.js-extra-form-data').remove();
             return false;
         }
-    });
+    }
 });

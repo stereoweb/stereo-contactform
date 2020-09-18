@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 1.0.19
+ * Version: 1.1
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -21,7 +21,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "1.0.19";
+        var $version = "1.1";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -107,6 +107,11 @@ if (!class_exists('ST_ContactForm')) {
         {
             wp_enqueue_script('stereo_contact', plugins_url('/js/forms.js', __FILE__), array(), $this->version, true);
             wp_localize_script('stereo_contact', 'stereo_cf', array('ajax_url' => admin_url('admin-ajax.php')));
+
+            if ($key = get_field('stereo_contact_recaptcha_v3', 'option')) {
+                wp_enqueue_script('stereo_recaptcha_v3', 'https://www.google.com/recaptcha/api.js?render=' . $key, array(), null, true);
+                wp_add_inline_script( 'stereo_recaptcha_v3', 'window.recaptcha_v3="'.$key.'";');
+            }
         }
 
         public function info_metabox_content()
@@ -118,6 +123,29 @@ if (!class_exists('ST_ContactForm')) {
 
         public function post_contact()
         {
+            if ($key = get_field('stereo_contact_recaptcha_secret', 'option')) {
+                if (!isset($_POST['_token'])) {
+                    wp_send_json_error(['message' => 'Token missing'], 400);
+                    die;
+                }
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL,"https://www.google.com/recaptcha/api/siteverify");
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array('secret' => $key, 'response' => $_POST['_token'])));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                $arrResponse = json_decode($response, true);
+
+                if($arrResponse["success"] && $arrResponse["action"] == 'submit' && $arrResponse["score"] >= 0.5) {
+                    // yeah
+                } else {
+                    wp_send_json_error($arrResponse, 500);
+                    die;
+                }
+            }
+
+
             if (!$_POST['_nobot']) {
                 header('HTTP/1.0 403 Forbidden');
                 die('No bots please!');

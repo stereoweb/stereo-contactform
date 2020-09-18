@@ -108,6 +108,68 @@ add_action('init',function() {
         ));
 
         acf_add_local_field_group(array(
+			'key' => 'group_5e8337e85e2d2',
+			'title' => __('reCAPTCHA v3','stereo-contactform'),
+			'fields' => array(
+				array(
+					'key' => 'field_5e8337fe8d7b8',
+					'label' => __('Site key','stereo-contactform'),
+					'name' => 'stereo_contact_recaptcha_v3',
+					'type' => 'text',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array(
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'placeholder' => '',
+					'prepend' => '',
+					'append' => '',
+					'maxlength' => '',
+				),
+				array(
+					'key' => 'field_5e8337fe8d7b5',
+					'label' => __('Secret key','stereo-contactform'),
+					'name' => 'stereo_contact_recaptcha_secret',
+					'type' => 'text',
+					'instructions' => '',
+					'required' => 0,
+					'conditional_logic' => 0,
+					'wrapper' => array(
+						'width' => '',
+						'class' => '',
+						'id' => '',
+					),
+					'default_value' => '',
+					'placeholder' => '',
+					'prepend' => '',
+					'append' => '',
+					'maxlength' => '',
+				),
+			),
+			'location' => array(
+				array(
+					array(
+						'param' => 'options_page',
+						'operator' => '==',
+						'value' => 'stereocf-page-content',
+					),
+				),
+			),
+			'menu_order' => 0,
+			'position' => 'normal',
+			'style' => 'default',
+			'label_placement' => 'left',
+			'instruction_placement' => 'label',
+			'hide_on_screen' => '',
+			'active' => true,
+			'description' => '',
+        ));
+
+        acf_add_local_field_group(array(
             'key' => 'group_5f57a7b5149a8',
             'title' => __('Catégorie Formulaire Stereo','stereo-contactform'),
             'fields' => array(
