@@ -17,11 +17,14 @@ if (!defined('ABSPATH')) {
 }
 
 if (!class_exists('ST_ContactForm')) {
-    include 'acf.php';
+
+     if( class_exists('ACF') ) {
+         include 'acf.php';
+     }
 
     class ST_ContactForm
     {
-        var $version = "1.1";
+        var $version = "2.0";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -105,9 +108,10 @@ if (!class_exists('ST_ContactForm')) {
 
         public function register_js()
         {
-            wp_enqueue_script('stereo_contact', plugins_url('/js/forms.js', __FILE__), array(), $this->version, true);
+            wp_enqueue_script('stereo_contact', plugins_url('/dist/js/bundle.js', __FILE__), array(), $this->version, true);
             wp_localize_script('stereo_contact', 'stereo_cf', array('ajax_url' => admin_url('admin-ajax.php')));
 
+            if( !class_exists('ACF') ) return;
             if ($key = get_field('stereo_contact_recaptcha_v3', 'option')) {
                 wp_enqueue_script('stereo_recaptcha_v3', 'https://www.google.com/recaptcha/api.js?render=' . $key, array(), null, true);
                 wp_add_inline_script( 'stereo_recaptcha_v3', 'window.recaptcha_v3="'.$key.'";');
@@ -225,6 +229,7 @@ if (!class_exists('ST_ContactForm')) {
 
         public function mail_to($dst)
         {
+            if( !class_exists('ACF') ) return $dst;
             $terms = $_POST['_category'];
             if( ! is_array($terms) ) $terms = array_map('trim', explode(',', $terms));
             $to = '';
@@ -246,6 +251,7 @@ if (!class_exists('ST_ContactForm')) {
 
         public function mail_from($dst)
         {
+             if( !class_exists('ACF') ) return $dst;
             if (is_email(get_field('stereo_from_mail','option'))) return get_field('stereo_from_name','option').' <'.get_field('stereo_from_mail','option').'>';
 			return $dst;
         }
