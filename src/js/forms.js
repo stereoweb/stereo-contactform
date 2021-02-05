@@ -9,7 +9,9 @@ export default class Form {
     }
 
     submit(e) {
-        e.preventDefault()
+        if (!this.formHasFiles()) {
+            e.preventDefault()
+        }
 
         if (!this.el.checkValidity()) {
             alert("Veuillez compléter tous les champs requis !");
