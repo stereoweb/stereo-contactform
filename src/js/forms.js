@@ -9,9 +9,7 @@ export default class Form {
     }
 
     submit(e) {
-        if (!this.formHasFiles()) {
             e.preventDefault()
-        }
 
         if (!this.el.checkValidity()) {
             alert("Veuillez compléter tous les champs requis !");
@@ -70,80 +68,38 @@ export default class Form {
 
         this.el.appendChild(div);
 
-        if (this.formHasFiles()) {
-            if (document.getElementById("stFrmToPost")!==null) document.getElementById("stFrmToPost").remove()
-            let iframe = document.createElement("iframe");
-            iframe.setAttribute('style', 'height:1px;width:1px;border:0;opacity:0;position:absolute;');
-            iframe.setAttribute("id", "stFrmToPost");
-            iframe.setAttribute("name", "stFrmToPost");
-            document.body.appendChild(iframe);
-
-            this.el.setAttribute("target", "stFrmToPost");
-            this.el.setAttribute("action", stereo_cf.ajax_url);
-            this.el.classList.add("is-submitting");
-
-            if (this.el.getAttribute('data-reset-only')) {
-                this.el.reset()
-            } else {
-                this.el.style.display = 'none';
-            }
-
-            setTimeout(() => {
-                this.el
-                    .querySelectorAll(".js-extra-form-data")
-                    .forEach((e) => e.parentNode.removeChild(e));
+        let formData = new FormData(this.el);
+        fetch(stereo_cf.ajax_url, { method: 'POST', credentials: "same-origin", body: formData })
+            .then(response => {
                 this.el.reset();
-            }, 500);
 
-            if (this.el.dataset.redirect) {
-                window.location.href = this.el.dataset.redirect;
-            } else {
-                this.el.classList.remove("is-submitting")
-                this.el.classList.add("is-submitted");
-                this.el.nextElementSibling.style.display = "block";
-            }
-        } else {
-            let formData = new FormData(this.el);
-            fetch(stereo_cf.ajax_url, { method: 'POST', body: formData })
-                .then(response => {
-                    this.el.reset();
-
-                    if (this.el.dataset.redirect) {
-                        window.location.href = this.el.dataset.redirect;
-                    } else {
-                        this.el.classList.remove("is-submitting");
-                        this.el.classList.add("is-submitted");
-                        this.el.nextElementSibling.style.display = "block";
-                    }
-                    return response
-                })
-                .catch((error) => {
-                    console.log('error', error)
+                if (this.el.dataset.redirect) {
+                    window.location.href = this.el.dataset.redirect;
+                } else {
                     this.el.classList.remove("is-submitting");
-                    this.el.style.display = 'block';
-                    alert("Une erreur est survenue, veuillez réessayer!");
-                })
+                    this.el.classList.add("is-submitted");
+                    this.el.nextElementSibling.style.display = "block";
+                }
+                return response
+            })
+            .catch((error) => {
+                console.log('error', error)
+                this.el.classList.remove("is-submitting");
+                this.el.style.display = 'block';
+                alert("Une erreur est survenue, veuillez réessayer!");
+            })
 
-            this.el.classList.add("is-submitting");
+        this.el.classList.add("is-submitting");
 
-            if (this.el.getAttribute('data-reset-only')) {
-                this.el.reset()
-            } else {
-                this.el.style.display = 'none';
-            }
-
-            this.el
-                .querySelectorAll(".js-extra-form-data")
-                .forEach((e) => e.parentNode.removeChild(e));
+        if (this.el.getAttribute('data-reset-only')) {
+            this.el.reset()
+        } else {
+            this.el.style.display = 'none';
         }
-    }
 
-    formHasFiles() {
-        let hasFile = false;
-        this.el.querySelectorAll("input[type=file]").forEach(i => {
-            if (i.files.length != 0) hasFile = true;
-        })
-        return hasFile;
+        this.el
+            .querySelectorAll(".js-extra-form-data")
+            .forEach((e) => e.parentNode.removeChild(e));
     }
 }
 
