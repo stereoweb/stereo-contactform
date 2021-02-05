@@ -24,7 +24,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "2.0";
+        var $version = "2.0.1";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 

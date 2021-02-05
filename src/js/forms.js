@@ -69,7 +69,7 @@ export default class Form {
         this.el.appendChild(div);
 
         if (this.formHasFiles()) {
-            document.getElementById("stFrmToPost").remove()
+            if (document.getElementById("stFrmToPost").length>0) document.getElementById("stFrmToPost").remove()
             let iframe = document.createElement("iframe");
             iframe.setAttribute('style', 'height:1px;width:1px;border:0;opacity:0;position:absolute;');
             iframe.setAttribute("id", "stFrmToPost");
