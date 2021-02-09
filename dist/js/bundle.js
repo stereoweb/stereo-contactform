@@ -34,7 +34,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /*! runtime requirements: __webpack_require__, __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _forms__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./forms */ \"./src/js/forms.js\");\n\nvar forms = document.querySelectorAll('.js-stereo-cf');\nforms.forEach(function (e) {\n  new _forms__WEBPACK_IMPORTED_MODULE_0__.default(e);\n});\n\n//# sourceURL=webpack://stereo-contactform/./src/js/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _forms__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./forms */ \"./src/js/forms.js\");\n\n\nwindow.initStereoForm = function () {\n  var forms = document.querySelectorAll('.js-stereo-cf');\n  forms.forEach(function (e) {\n    new _forms__WEBPACK_IMPORTED_MODULE_0__.default(e);\n  });\n};\n\nwindow.initStereoForm();\n\n//# sourceURL=webpack://stereo-contactform/./src/js/index.js?");
 
 /***/ })
 
