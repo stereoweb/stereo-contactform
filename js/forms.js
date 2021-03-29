@@ -61,54 +61,36 @@ jQuery(function ($) {
         form.find('.js-extra-form-data').remove();
         $div.appendTo(form);
 
-        if (formHasFiles(frm)) {
-            $('#stFrmToPost').remove();
-            $('<iframe style="height:1px;width:1px;border:0;opacity:0;position:absolute;" id="stFrmToPost" name="stFrmToPost" />').appendTo($('body'));
-            form.attr('target', 'stFrmToPost');
-            form.attr('action', stereo_cf.ajax_url);
-            form.addClass('is-submitting')
 
-            if (!form.data('reset-only')) {
-                form[0].reset();
-            } else {
-                form.hide();
-            }
+        var fd = new FormData(frm);
 
-            setTimeout(function () {
-                form.find('.js-extra-form-data').remove();
-                form.get(0).reset();
-            }, 500)
+        fetch(stereo_cf.ajax_url, {
+            method: "POST",
+            credentials: "same-origin",
+            body: fd
+        }).then(function () {
+            form.get(0).reset();
 
             if (form.data('redirect')) {
                 window.location.href = form.data('redirect');
             } else {
                 form.removeClass('is-submitting').addClass('is-submitted').next().show();
             }
+        }).catch(function () {
+            form.removeClass('is-submitting').show();
+            alert('Une erreur est survenue, veuillez réessayer!');
+        });
+
+        form.addClass('is-submitting');
+
+        if (form.data('reset-only')) {
+            form[0].reset();
         } else {
-            $.post(stereo_cf.ajax_url, form.serializeArray())
-                .then(function () {
-                    form.get(0).reset();
-
-                    if (form.data('redirect')) {
-                        window.location.href = form.data('redirect');
-                    } else {
-                        form.removeClass('is-submitting').addClass('is-submitted').next().show();
-                    }
-                })
-                .fail(function () {
-                    form.removeClass('is-submitting').show();
-                    alert('Une erreur est survenue, veuillez réessayer!');
-                });
-            form.addClass('is-submitting');
-
-            if (form.data('reset-only')) {
-                form[0].reset();
-            } else {
-                form.hide();
-            }
-
-            form.find('.js-extra-form-data').remove();
-            return false;
+            form.hide();
         }
+
+        form.find('.js-extra-form-data').remove();
+        return false;
+
     }
 });

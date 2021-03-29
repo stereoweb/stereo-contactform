@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 1.1
+ * Version: 1.1.1
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -21,7 +21,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "1.1";
+        var $version = "1.1.1";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -258,4 +258,3 @@ if (!class_exists('ST_ContactForm')) {
     }
     add_action( 'plugins_loaded', 'stereo_contactform_load_plugin_textdomain' );
 }
-
