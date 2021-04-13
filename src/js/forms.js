@@ -40,7 +40,9 @@ export default class Form {
             _subject: this.el.dataset.subject || "Formulaire de contact",
             _title_field:
                 this.el.dataset.title ||
-                this.el.querySelectorAll("input:first").getAttribute("name"),
+                this.el
+                    .querySelectorAll("input:first-child")
+                    .getAttribute("name"),
             _category: this.el.dataset.category || "Contact",
             _nobot: "1",
         };
