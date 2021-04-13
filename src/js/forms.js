@@ -64,12 +64,9 @@ export default class Form {
             }
         }
 
-        let extras = this.el.querySelectorAll(".js-extra-form-data");
-        if (extras) {
-            for (let i = 0; i < extras.length; ++i) {
-                extras[i].parentNode.removeChild(e);
-            }
-        }
+        this.el
+            .querySelectorAll(".js-extra-form-data")
+            .forEach((e) => e.parentNode.removeChild(e));
 
         this.el.appendChild(div);
 
@@ -106,12 +103,9 @@ export default class Form {
             this.el.style.display = "none";
         }
 
-        extras = this.el.querySelectorAll(".js-extra-form-data");
-        if (extras) {
-            for (let i = 0; i < extras.length; ++i) {
-                extras[i].parentNode.removeChild(e);
-            }
-        }
+        this.el
+            .querySelectorAll(".js-extra-form-data")
+            .forEach((e) => e.parentNode.removeChild(e));
     }
 }
 
