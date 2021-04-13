@@ -35,6 +35,7 @@ The subject will be "Formulaire de contact"
 It will be logged in your Wordpress Administration, with the date, followed by the first field of your form.
 
 ### Want to reset form and keet it visible after send?
+
 ```
 <form class="[any other classes] js-stereo-cf" data-reset-only>
 ```
@@ -88,7 +89,6 @@ Set data-redirect with the redirect url
 <div style="display:none">Thanks.</div>
 ```
 
-
 ### Manipulate the "TO" email address
 
 If you want the email to go somewhere else :
@@ -129,7 +129,6 @@ add_filter('st_cf_mail_content',function($content) {
 });
 ```
 
-
 ## HEADERS
 
 Default mail headers are :
@@ -142,6 +141,7 @@ Default mail headers are :
 If you have a "Courriel" field a replyTo will be added to your headers.
 
 ### Field name can be changed
+
 ```
 add_filter('st_cf_mail_field',function($field) {
     return 'Email';
@@ -149,6 +149,7 @@ add_filter('st_cf_mail_field',function($field) {
 ```
 
 ### Modify mail headers array
+
 ```
 add_filter('st_cf_mail_headers',function($headers) {
     $headers[] = "X-Some: More-Headers";
@@ -157,13 +158,13 @@ add_filter('st_cf_mail_headers',function($headers) {
 ```
 
 ### Modify basic message on top of email
+
 ```
 add_filter('st_cf_mailmsg',function($msg) {
     return 'New form entry : ';
     // Default : Nouveau formulaire reçu, voici l'information
 });
 ```
-
 
 ## HEADERS
 
@@ -177,6 +178,7 @@ Default mail headers are :
 If you have a "Courriel" field a replyTo will be added to your headers.
 
 ### Field name can be changed
+
 ```
 add_filter('st_cf_mail_field',function($field) {
     return 'Email';
@@ -184,13 +186,16 @@ add_filter('st_cf_mail_field',function($field) {
 ```
 
 ### Modify mail headers array
+
 ```
 add_filter('st_cf_mail_headers',function($headers) {
     $headers[] = "X-Some: More-Headers";
     return $headers;
 });
 ```
+
 ### Add callback function
+
 ```
 <form class="[any other classes] js-stereo-cf" data-callback="functionName">
     <input name="Prenom" required>
@@ -215,4 +220,10 @@ add_action('st_cf_files',function($files,$postid) {
         // $f is a temp file path that will be deleted after this hook.
     }
 });
+```
+
+### Init forms on demands
+
+```
+if (window.initStereoForm) window.initStereoForm();
 ```
