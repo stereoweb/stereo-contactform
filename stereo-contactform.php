@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 2.0.10
+ * Version: 2.0.12
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
