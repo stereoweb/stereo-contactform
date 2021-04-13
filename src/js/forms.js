@@ -1,15 +1,15 @@
 export default class Form {
     constructor(element) {
-        this.el = element
+        this.el = element;
         this.init();
     }
 
     init() {
-        this.el.addEventListener('submit', e => this.submit(e));
+        this.el.addEventListener("submit", (e) => this.submit(e));
     }
 
     submit(e) {
-            e.preventDefault()
+        e.preventDefault();
 
         if (!this.el.checkValidity()) {
             alert("Veuillez compléter tous les champs requis !");
@@ -18,9 +18,11 @@ export default class Form {
 
         if (window.recaptcha_v3) {
             grecaptcha.ready(() => {
-                grecaptcha.execute(window.recaptcha_v3, { action: 'submit' }).then(token => {
-                    this.send(token);
-                });
+                grecaptcha
+                    .execute(window.recaptcha_v3, { action: "submit" })
+                    .then((token) => {
+                        this.send(token);
+                    });
             });
         } else {
             this.send();
@@ -41,9 +43,9 @@ export default class Form {
                 this.el.querySelectorAll("input:first").getAttribute("name"),
             _category: this.el.dataset.category || "Contact",
             _nobot: "1",
-        }
+        };
 
-        if (token) additions['_token'] = token;
+        if (token) additions["_token"] = token;
 
         for (let name in additions) {
             let input = document.createElement("input");
@@ -62,15 +64,22 @@ export default class Form {
             }
         }
 
-        this.el
-            .querySelectorAll(".js-extra-form-data")
-            .forEach((e) => e.parentNode.removeChild(e));
+        let extras = this.el.querySelectorAll(".js-extra-form-data");
+        if ($extras) {
+            for (i = 0; i < extras.length; ++i) {
+                extras[i].parentNode.removeChild(e);
+            }
+        }
 
         this.el.appendChild(div);
 
         let formData = new FormData(this.el);
-        fetch(stereo_cf.ajax_url, { method: 'POST', credentials: "same-origin", body: formData })
-            .then(response => {
+        fetch(stereo_cf.ajax_url, {
+            method: "POST",
+            credentials: "same-origin",
+            body: formData,
+        })
+            .then((response) => {
                 this.el.reset();
 
                 if (this.el.dataset.redirect) {
@@ -80,26 +89,29 @@ export default class Form {
                     this.el.classList.add("is-submitted");
                     this.el.nextElementSibling.style.display = "block";
                 }
-                return response
+                return response;
             })
             .catch((error) => {
-                console.log('error', error)
+                console.log("error", error);
                 this.el.classList.remove("is-submitting");
-                this.el.style.display = 'block';
+                this.el.style.display = "block";
                 alert("Une erreur est survenue, veuillez réessayer!");
-            })
+            });
 
         this.el.classList.add("is-submitting");
 
-        if (this.el.getAttribute('data-reset-only')) {
-            this.el.reset()
+        if (this.el.getAttribute("data-reset-only")) {
+            this.el.reset();
         } else {
-            this.el.style.display = 'none';
+            this.el.style.display = "none";
         }
 
-        this.el
-            .querySelectorAll(".js-extra-form-data")
-            .forEach((e) => e.parentNode.removeChild(e));
+        extras = this.el.querySelectorAll(".js-extra-form-data");
+        if ($extras) {
+            for (i = 0; i < extras.length; ++i) {
+                extras[i].parentNode.removeChild(e);
+            }
+        }
     }
 }
 
