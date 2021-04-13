@@ -65,7 +65,7 @@ export default class Form {
         }
 
         let extras = this.el.querySelectorAll(".js-extra-form-data");
-        if ($extras) {
+        if (extras) {
             for (i = 0; i < extras.length; ++i) {
                 extras[i].parentNode.removeChild(e);
             }
@@ -107,7 +107,7 @@ export default class Form {
         }
 
         extras = this.el.querySelectorAll(".js-extra-form-data");
-        if ($extras) {
+        if (extras) {
             for (i = 0; i < extras.length; ++i) {
                 extras[i].parentNode.removeChild(e);
             }
