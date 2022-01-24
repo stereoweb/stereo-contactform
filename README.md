@@ -221,7 +221,20 @@ add_action('st_cf_files',function($files,$postid) {
     }
 });
 ```
+### Handle files upload by external source
 
+Send files in mail uploaded before the form is submitted :
+
+Files will be removed from the server after the form is sent. Handle uploaded files if you want to keep them.
+
+`$files = array of files`
+
+```
+add_filter('st_cf_files_external',function($files) {
+    $files[] = $file_name;
+    return $files;
+});
+```
 ### Init forms on demands
 
 ```

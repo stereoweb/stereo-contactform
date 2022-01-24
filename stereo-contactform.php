@@ -219,7 +219,7 @@ if (!class_exists('ST_ContactForm')) {
                     }
                 }
             }
-            $files = apply_filters('st_cf_files', $files);
+            $files = apply_filters('st_cf_files_external', $files);
 
             wp_mail($to, $subject, $html, $headers, $files);
             if (count($files)) {
