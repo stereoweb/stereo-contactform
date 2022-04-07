@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 2.0.16
+ * Version: 2.1.0
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -24,7 +24,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "2.0.16";
+        var $version = "2.1.0";
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -40,6 +40,10 @@ if (!class_exists('ST_ContactForm')) {
 
             add_filter('st_cf_mail_to',[$this, 'mail_to'], 1);
             add_filter('st_cf_mail_from',[$this, 'mail_from'], 1);
+
+            add_action('st_cf_files', [$this, 'save_files'], 10, 2);
+            add_action('add_meta_boxes',[$this, 'add_file_metabox']);
+            add_action( 'wp_ajax_download_file', [$this, 'download_file'] );
         }
 
         public function init()
@@ -254,6 +258,65 @@ if (!class_exists('ST_ContactForm')) {
              if( !class_exists('ACF') ) return $dst;
             if (is_email(get_field('stereo_from_mail','option'))) return get_field('stereo_from_name','option').' <'.get_field('stereo_from_mail','option').'>';
 			return $dst;
+        }
+
+        public function save_files($files,$postid)
+        {
+            $uploadedfiles = [];
+            $upload_dir = wp_upload_dir();
+            $private_dirname = $upload_dir['basedir'].'/private';
+
+            if ( ! file_exists( $wp_mkdir_p ) ) {
+                wp_mkdir_p( $private_dirname );
+            }
+
+            foreach($files as $f) {
+                $fname = time(). '_'.basename($f);
+                @copy($f, $private_dirname . '/' . $fname);
+                $uploadedfiles[] = $fname;
+            }
+            update_field('uploadedfiles',$uploadedfiles,$postid);
+        }
+
+        public function add_file_metabox()
+        {
+            add_meta_box('metabox_files', 'Fichier(s) transféré(s)', 'metabox_files_content', 'st_contactform', 'side', 'high');
+        }
+
+        public function metabox_files_content($post) {
+            $upload_dir = wp_upload_dir();
+            $private_dirname = admin_url('admin-ajax.php');
+            $uploadedfiles = get_field('uploadedfiles',$post->ID);
+            if (is_array($uploadedfiles) && count($uploadedfiles)) {
+                foreach($uploadedfiles as $f) {
+                    echo '<p><a href="'.$private_dirname . '?action=download_file&file=' . urlencode($f).'" target="_blank">'.$f.'</a></p>';
+                }
+            }
+            else {
+                echo '<p>Aucun fichier recu.</p>';
+            }
+        }
+
+        public function download_file()
+        {
+            ob_end_clean();
+            $upload_dir = wp_upload_dir();
+            $private_dirname = $upload_dir['basedir'].'/private';
+            $file = $private_dirname . '/' . $_GET['file'];
+
+            if (isset($_GET['file']) && file_exists($file)) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="'.basename($file).'"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($file));
+                readfile($file);
+                exit;
+            }
+
+            die;
         }
     }
 
