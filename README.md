@@ -230,7 +230,7 @@ Files will be removed from the server after the form is sent. Handle uploaded fi
 `$files = array of files`
 
 ```
-add_filter('st_cf_files_external',function($files) {
+add_filter('st_cf_files_external',function($files, $post_id) {
     $files[] = $file_name;
     return $files;
 });
