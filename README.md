@@ -219,7 +219,7 @@ add_action('st_cf_files',function($files,$postid) {
     foreach($files as $f)  {
         // $f is a temp file path that will be deleted after this hook.
     }
-});
+}, 10, 2);
 ```
 ### Handle files upload by external source
 
@@ -233,7 +233,7 @@ Files will be removed from the server after the form is sent. Handle uploaded fi
 add_filter('st_cf_files_external',function($files, $post_id) {
     $files[] = $file_name;
     return $files;
-});
+}, 10, 2);
 ```
 ### Init forms on demands
 
