@@ -208,6 +208,7 @@ add_filter('st_cf_mail_headers',function($headers) {
 ### Handle uploaded files
 
 All uploaded files with name file[] are sent by email by default, but if you want to do anything else with them :
+If you don't want to uploads file on the server use _file[]
 
 This hook is not triggered if there are no uploaded files.
 

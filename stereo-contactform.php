@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 2.2.7
+ * Version: 2.2.8
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -24,7 +24,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "2.2.7"; 
+        var $version = "2.2.8"; 
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -223,6 +223,21 @@ if (!class_exists('ST_ContactForm')) {
                     }
                 }
             }
+
+            if (isset($_FILES['_file']) && count($_FILES['_file']['name'])) {
+                for ($x = 0; $x < count($_FILES['_file']['name']); $x++) {
+                    if (is_uploaded_file($_FILES['_file']['tmp_name'][$x])) {
+                        $file = sys_get_temp_dir() . '/' . sanitize_file_name($_FILES['_file']['name'][$x]);
+                        if (@move_uploaded_file($_FILES['_file']['tmp_name'][$x], $file)) {
+                            $files[] = [
+                                'file' => $file,
+                                'no_upload' => true,
+                            ];
+                        }
+                    }
+                }
+            }
+            
             $files = apply_filters('st_cf_files_external', $files, $postid);
 
             wp_mail($to, $subject, $html, $headers, $files);
@@ -272,6 +287,9 @@ if (!class_exists('ST_ContactForm')) {
             }
 
             foreach($files as $f) {
+                if(is_array($f) && isset($f['no_upload'])) {
+                    continue;
+                }
                 $fname = time(). '_'.basename($f);
                 @copy($f, $private_dirname . '/' . $fname);
                 $uploadedfiles[] = $fname;
