@@ -6,7 +6,7 @@
  * Author URI: https://www.stereo.ca/
  * Text Domain: stereo-contactform
  * Domain Path: /languages
- * Version: 2.3.0
+ * Version: 2.3.1
  * License:     0BSD
  *
  * Copyright (c) 2018 Stereo
@@ -24,7 +24,7 @@ if (!class_exists('ST_ContactForm')) {
 
     class ST_ContactForm
     {
-        var $version = "2.3.0"; 
+        var $version = "2.3.1"; 
         var $post_type = "st_contactform";
         var $taxonomy = "st_contactform_categorie";
 
@@ -173,7 +173,20 @@ if (!class_exists('ST_ContactForm')) {
 
             foreach ($_POST as $k => $v) {
                 if ($k == 'action' || substr($k, 0, 1) == '_') continue;
-                $forminfo[str_replace('_', ' ', $k)] = is_array($v) ? implode(', ', array_map('stripslashes', $v)) : stripslashes($v);
+                $isMultiDimensional = false;
+                if (is_array($v)) {
+                    foreach ($v as $key => $value) {
+                        if (is_array($value)) {
+                            $isMultiDimensional = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$isMultiDimensional) {
+                    $forminfo[str_replace('_', ' ', $k)] = is_array($v) ? implode(', ', array_map('stripslashes', $v)) : stripslashes($v);
+                } else {
+                    $this->loopArray($v, $k, $forminfo);
+                }
             }
 
             foreach ($titlefield as $field) {
@@ -192,6 +205,17 @@ if (!class_exists('ST_ContactForm')) {
             $this->send_email($forminfo, stripslashes($_POST['_subject']), $id);
             wp_send_json(['success' => true]);
             die();
+        }
+
+        private function loopArray($array, $prefix, &$forminfo)
+        {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $this->loopArray($value, $prefix . ' ' . $key, $forminfo);
+                } else {
+                    $forminfo[str_replace('_', ' ', $prefix) . ' ' . $key] = stripslashes($value);
+                }
+            }
         }
 
         public function send_email($forminfo, $subject, $postid)
